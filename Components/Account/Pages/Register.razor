@@ -42,6 +42,29 @@
                 <label for="confirm-password">Confirm Password</label>
                 <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
             </div>
+
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.StudentId" class="form-control" aria-required="true"
+                           placeholder="Enter your Student ID" />
+                <label for="studentId">Student ID</label>
+                <ValidationMessage For="() => Input.StudentId" class="text-danger" />
+            </div>
+
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.Name" class="form-control" aria-required="true"
+                           placeholder="Enter your Name" />
+                <label for="name">Name</label>
+                <ValidationMessage For="() => Input.Name" class="text-danger" />
+            </div>
+
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.Address" class="form-control" aria-required="true"
+                           placeholder="Enter your Address" />
+                <label for="address">Address</label>
+                <ValidationMessage For="() => Input.Address" class="text-danger" />
+            </div>
+
+
             <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
         </EditForm>
     </div>
@@ -68,11 +91,15 @@
     public async Task RegisterUser(EditContext editContext)
     {
         var user = CreateUser();
+        user.Name = Input.Name;
+        user.Address = Input.Address;
+        user.StudentId = Input.StudentId;
 
         await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
         var emailStore = GetEmailStore();
         await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
         var result = await UserManager.CreateAsync(user, Input.Password);
+        await UserManager.AddToRoleAsync(user, "Student");
 
         if (!result.Succeeded)
         {
@@ -141,5 +168,19 @@
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; } = "";
+
+
+        [Required]
+        [Display(Name = "Name")]
+        public string Name { get; set; } = "";
+
+
+        [Display(Name = "Address")]
+        public string Address { get; set; } = "";
+
+        [Required]
+        [StringLength(7, ErrorMessage = "The {0} must be {1} characters long.")]
+        [Display(Name = "Student ID")]
+        public string StudentId { get; set; } = "";
     }
 }
