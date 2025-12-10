@@ -20,12 +20,18 @@
         <dl class="row">
             <dt class="col-sm-2">Name</dt>
             <dd class="col-sm-10">@course.Name</dd>
-            <dt class="col-sm-2">Subject</dt>
-            <dd class="col-sm-10">@course.Subject?.Name</dd>
-            <dt class="col-sm-2">Semester</dt>
-            <dd class="col-sm-10">@course.Semester?.Name</dd>
-            <dt class="col-sm-2">Lecturer</dt>
-            <dd class="col-sm-10">@course.Lecture?.Name</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">SubjectId</dt>
+            <dd class="col-sm-10">@course.SubjectId</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">SemesterId</dt>
+            <dd class="col-sm-10">@course.SemesterId</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">LecturerId</dt>
+            <dd class="col-sm-10">@course.LecturerId</dd>
         </dl>
         <EditForm method="post" Model="course" OnValidSubmit="DeleteCourse" FormName="delete" Enhance>
             <button type="submit" class="btn btn-danger" disabled="@(course is null)">Delete</button> |
@@ -43,11 +49,7 @@
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        course = await context.Courses
-            .Include(c => c.Subject)
-            .Include(c => c.Semester)
-            .Include(c => c.Lecture)
-            .FirstOrDefaultAsync(m => m.Id == Id);
+        course = await context.Course.FirstOrDefaultAsync(m => m.Id == Id);
 
         if (course is null)
         {
@@ -58,7 +60,7 @@
     private async Task DeleteCourse()
     {
         using var context = DbFactory.CreateDbContext();
-        context.Courses.Remove(course!);
+        context.Course.Remove(course!);
         await context.SaveChangesAsync();
         NavigationManager.NavigateTo("/courses");
     }

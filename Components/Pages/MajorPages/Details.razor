@@ -38,7 +38,7 @@
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        major = await context.Majors.Include(m=>m.Department).FirstOrDefaultAsync(m => m.Id == Id);
+        major = await context.Majors.Include(x=>x.Department).FirstOrDefaultAsync(m => m.Id == Id);
 
         if (major is null)
         {

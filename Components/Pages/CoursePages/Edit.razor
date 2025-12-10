@@ -1,11 +1,8 @@
 ﻿@page "/courses/edit"
 @using Microsoft.EntityFrameworkCore
-@using Microsoft.AspNetCore.Identity
 @using SIMS.Data
 @inject IDbContextFactory<SIMS.Data.ApplicationDbContext> DbFactory
 @inject NavigationManager NavigationManager
-@inject UserManager<ApplicationUser> UserManager
-@inject RoleManager<IdentityRole> RoleManager
 
 <PageTitle>Edit</PageTitle>
 
@@ -31,37 +28,19 @@ else
                     <ValidationMessage For="() => Course.Name" class="text-danger" />
                 </div>
                 <div class="mb-3">
-                    <label for="subjectid" class="form-label">Subject:</label>
-                    <InputSelect id="subjectid" @bind-Value="Course.SubjectId" class="form-select">
-                        <option value="0">-- Select subject --</option>
-                        @foreach (var s in Subjects)
-                        {
-                            <option value="@s.Id">@s.Name</option>
-                        }
-                    </InputSelect>
+                    <label for="subjectid" class="form-label">SubjectId:</label>
+                    <InputNumber id="subjectid" @bind-Value="Course.SubjectId" class="form-control" />
                     <ValidationMessage For="() => Course.SubjectId" class="text-danger" />
                 </div>
                 <div class="mb-3">
-                    <label for="semesterid" class="form-label">Semester:</label>
-                    <InputSelect id="semesterid" @bind-Value="Course.SemesterId" class="form-select">
-                        <option value="0">-- Select semester --</option>
-                        @foreach (var sem in Semesters)
-                        {
-                            <option value="@sem.Id">@sem.Name</option>
-                        }
-                    </InputSelect>
+                    <label for="semesterid" class="form-label">SemesterId:</label>
+                    <InputNumber id="semesterid" @bind-Value="Course.SemesterId" class="form-control" />
                     <ValidationMessage For="() => Course.SemesterId" class="text-danger" />
                 </div>
                 <div class="mb-3">
-                    <label for="lectureid" class="form-label">Lecturer:</label>
-                    <InputSelect id="lectureid" @bind-Value="Course.LectureId" class="form-select">
-                        <option value="">-- Select lecturer --</option>
-                        @foreach (var lecturer in Lecturers)
-                        {
-                            <option value="@lecturer.Id">@lecturer.Name</option>
-                        }
-                    </InputSelect>
-                    <ValidationMessage For="() => Course.LectureId" class="text-danger" />
+                    <label for="lecturerid" class="form-label">LecturerId:</label>
+                    <InputText id="lecturerid" @bind-Value="Course.LecturerId" class="form-control" />
+                    <ValidationMessage For="() => Course.LecturerId" class="text-danger" />
                 </div>
                 <button type="submit" class="btn btn-primary">Save</button>
             </EditForm>
@@ -80,34 +59,14 @@ else
     [SupplyParameterFromForm]
     private Course? Course { get; set; }
 
-    private List<Subject> Subjects { get; set; } = new();
-    private List<Semester> Semesters { get; set; } = new();
-    private List<ApplicationUser> Lecturers { get; set; } = new();
-
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        Course ??= await context.Courses.FirstOrDefaultAsync(m => m.Id == Id);
+        Course ??= await context.Course.FirstOrDefaultAsync(m => m.Id == Id);
 
         if (Course is null)
         {
             NavigationManager.NavigateTo("notfound");
-        }
-
-        Subjects = await context.Subjects.AsNoTracking().ToListAsync();
-        Semesters = await context.Semesters.AsNoTracking().ToListAsync();
-
-        var lecturerRole = await RoleManager.FindByNameAsync("Lecture");
-        if (lecturerRole != null)
-        {
-            var lecturerUserIds = await context.UserRoles
-                .Where(ur => ur.RoleId == lecturerRole.Id)
-                .Select(ur => ur.UserId)
-                .ToListAsync();
-            
-            Lecturers = await UserManager.Users
-                .Where(u => lecturerUserIds.Contains(u.Id))
-                .ToListAsync();
         }
     }
 
@@ -140,6 +99,6 @@ else
     private bool CourseExists(int id)
     {
         using var context = DbFactory.CreateDbContext();
-        return context.Courses.Any(e => e.Id == id);
+        return context.Course.Any(e => e.Id == id);
     }
 }

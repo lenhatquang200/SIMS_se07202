@@ -37,7 +37,7 @@
                             <label>Name</label>
                         </div>
                         <div class="form-floating mb-3">
-                            <InputText @bind-Value="Input.StudentId" class="form-control" placeholder="Student Id" />
+                            <InputText @bind-Value="Input.Code" class="form-control" placeholder="Student Id" />
                             <label>Student ID</label>
                         </div>
                         <div class="mb-3">
@@ -72,7 +72,7 @@
 
     private async Task CreateUser()
     {
-        var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, Name = Input.Name, StudentId = Input.StudentId };
+        var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, Name = Input.Name, Code = Input.Code };
         var result = await UserManager.CreateAsync(user, Input.Password);
         if (!result.Succeeded)
         {
@@ -93,7 +93,7 @@
         [Required]
         public string Password { get; set; } = "";
         public string Name { get; set; } = "";
-        public string StudentId { get; set; } = "";
+        public string Code { get; set; } = "";
         public string Role { get; set; } = "";
     }
 }

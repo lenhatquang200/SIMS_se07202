@@ -20,11 +20,8 @@
                 <InputText id="name" @bind-Value="Major.Name" class="form-control" />
                 <ValidationMessage For="() => Major.Name" class="text-danger" />
             </div>
-            @*<div class="mb-3">
-                    <label for="departmentid" class="form-label">DepartmentId:</label>
-                    <InputNumber id="departmentid" @bind-Value="Major.DepartmentId" class="form-control" />
-                    <ValidationMessage For="() => Major.DepartmentId" class="text-danger" />
-                </div>*@
+
+
 
             <div class="mb-3">
                 <label for="departmentid" class="form-label">Department:</label>
@@ -60,6 +57,7 @@
         await context.SaveChangesAsync();
         NavigationManager.NavigateTo("/majors");
     }
+
     public List<Department> Departments { get; set; } = new();
     protected override async Task OnInitializedAsync()
     {

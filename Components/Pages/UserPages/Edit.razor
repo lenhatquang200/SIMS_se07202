@@ -38,7 +38,7 @@
                                 <label>Name</label>
                             </div>
                             <div class="form-floating mb-3">
-                                <InputText @bind-Value="User.StudentId" class="form-control" placeholder="Student Id" />
+                                <InputText @bind-Value="User.Code" class="form-control" placeholder="Student Id" />
                                 <label>Student ID</label>
                             </div>
                             <div class="mb-3">
@@ -101,7 +101,7 @@
         userToUpdate.NormalizedUserName = User.Email.ToUpperInvariant();
         userToUpdate.NormalizedEmail = User.Email.ToUpperInvariant();
         userToUpdate.Name = User.Name;
-        userToUpdate.StudentId = User.StudentId;
+        userToUpdate.Code = User.Code;
 
         var updateResult = await UserManager.UpdateAsync(userToUpdate);
         if (!updateResult.Succeeded)

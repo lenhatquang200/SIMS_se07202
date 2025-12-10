@@ -10,8 +10,7 @@
         public int SemesterId { get; set; }
         public Semester Semester { get; set; }
 
-        public string LectureId { get; set; }
-        public ApplicationUser Lecture { get; set; }
-
+        public string LecturerId { get; set; }
+        public ApplicationUser Lecturer { get; set; }
     }
 }

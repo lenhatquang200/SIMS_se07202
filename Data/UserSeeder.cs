@@ -23,7 +23,6 @@ namespace SIMS.Data
             string adminEmail = "admin@admin.com";
             string adminPassword = "123123";
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
-
             if (adminUser == null)
             {
                 var user = new ApplicationUser
@@ -31,6 +30,7 @@ namespace SIMS.Data
                     UserName = adminEmail,
                     Email = adminEmail,
                     Name = "System Administrator",
+                    Code = "ADMIN001",
                     EmailConfirmed = true
                 };
 
@@ -40,7 +40,7 @@ namespace SIMS.Data
                     await userManager.AddToRoleAsync(user, "Admin");
                 }
             }
-        }
 
+        }
     }
 }

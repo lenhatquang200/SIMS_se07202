@@ -14,7 +14,7 @@
     <a href="majors/create">Create New</a>
 </p>
 
-<QuickGrid Class="table" Items="DbFactory.CreateDbContext().Majors.Include(m=>m.Department)">
+<QuickGrid Class="table" Items="context.Majors.Include(m=>m.Department)">
     <PropertyColumn Property="major => major.Name" />
     <PropertyColumn Title="Department Name" Property="major => major.Department.Name" />
 

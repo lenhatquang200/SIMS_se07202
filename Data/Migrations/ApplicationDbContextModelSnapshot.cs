@@ -17,7 +17,7 @@ namespace SIMS.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.20")
+                .HasAnnotation("ProductVersion", "8.0.21")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -169,6 +169,10 @@ namespace SIMS.Migrations
                     b.Property<string>("Avatar")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -213,9 +217,6 @@ namespace SIMS.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("StudentId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -244,7 +245,7 @@ namespace SIMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("LectureId")
+                    b.Property<string>("LecturerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -260,13 +261,13 @@ namespace SIMS.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LectureId");
+                    b.HasIndex("LecturerId");
 
                     b.HasIndex("SemesterId");
 
                     b.HasIndex("SubjectId");
 
-                    b.ToTable("Courses");
+                    b.ToTable("Course");
                 });
 
             modelBuilder.Entity("SIMS.Data.Department", b =>
@@ -297,6 +298,13 @@ namespace SIMS.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("EnrollmentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("StudentId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -308,6 +316,42 @@ namespace SIMS.Migrations
                     b.HasIndex("StudentId");
 
                     b.ToTable("Enrollments");
+                });
+
+            modelBuilder.Entity("SIMS.Data.Grade", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EnrollmentId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("FinalScore")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<string>("LetterGrade")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("MidtermScore")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<decimal?>("TotalScore")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EnrollmentId");
+
+                    b.ToTable("Grades");
                 });
 
             modelBuilder.Entity("SIMS.Data.Major", b =>
@@ -423,9 +467,9 @@ namespace SIMS.Migrations
 
             modelBuilder.Entity("SIMS.Data.Course", b =>
                 {
-                    b.HasOne("SIMS.Data.ApplicationUser", "Lecture")
+                    b.HasOne("SIMS.Data.ApplicationUser", "Lecturer")
                         .WithMany()
-                        .HasForeignKey("LectureId")
+                        .HasForeignKey("LecturerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -441,7 +485,7 @@ namespace SIMS.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Lecture");
+                    b.Navigation("Lecturer");
 
                     b.Navigation("Semester");
 
@@ -453,7 +497,7 @@ namespace SIMS.Migrations
                     b.HasOne("SIMS.Data.Course", "Course")
                         .WithMany()
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("SIMS.Data.ApplicationUser", "Student")
@@ -465,6 +509,17 @@ namespace SIMS.Migrations
                     b.Navigation("Course");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("SIMS.Data.Grade", b =>
+                {
+                    b.HasOne("SIMS.Data.Enrollment", "Enrollment")
+                        .WithMany()
+                        .HasForeignKey("EnrollmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Enrollment");
                 });
 
             modelBuilder.Entity("SIMS.Data.Major", b =>

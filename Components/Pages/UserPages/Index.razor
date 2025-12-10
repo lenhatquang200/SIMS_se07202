@@ -20,7 +20,7 @@
             <QuickGrid Class="table table-hover" Items="Users.AsQueryable()">
                 <PropertyColumn Title="Email" Property="u => u.Email" />
                 <PropertyColumn Title="Name" Property="u => u.Name" />
-                <PropertyColumn Title="Student ID" Property="u => u.StudentId" />
+                <PropertyColumn Title="Student ID" Property="u => u.Code" />
                 <PropertyColumn Title="Roles" Property="u => u.Roles" />
                 <TemplateColumn Title="Actions" Context="user">
                     <div class="btn-group" role="group">
@@ -49,7 +49,7 @@
                 Id = u.Id,
                 Email = u.Email ?? "",
                 Name = u.Name,
-                StudentId = u.StudentId ?? "",
+                Code = u.Code ?? "",
                 Roles = string.Join(", ", roles)
             });
         }
@@ -60,7 +60,7 @@
         public string Id { get; set; } = "";
         public string Email { get; set; } = "";
         public string Name { get; set; } = "";
-        public string StudentId { get; set; } = "";
+        public string Code { get; set; } = "";
         public string Roles { get; set; } = "";
     }
 }

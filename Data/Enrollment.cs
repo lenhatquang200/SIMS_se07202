@@ -7,6 +7,8 @@ namespace SIMS.Data
         public ApplicationUser Student { get; set; }
         public int CourseId { get; set; }
         public Course Course { get; set; }
+        public DateTime EnrollmentDate { get; set; }
+        public string Status { get; set; }
     }
 }
 

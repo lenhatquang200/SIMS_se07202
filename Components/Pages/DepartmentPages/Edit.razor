@@ -4,59 +4,37 @@
 @inject IDbContextFactory<SIMS.Data.ApplicationDbContext> DbFactory
 @inject NavigationManager NavigationManager
 
-<PageTitle>Edit Department</PageTitle>
+<PageTitle>Edit</PageTitle>
 
-<div class="container-fluid p-4">
-    <div class="d-flex align-items-center mb-4">
-  <a href="/departments" class="btn btn-outline-secondary me-3">
-<i class="bi bi-arrow-left"></i>
-   </a>
-<h1 class="mb-0">
-            <i class="bi bi-building text-primary"></i> Edit Department
-        </h1>
+<h1>Edit</h1>
+
+<h2>Department</h2>
+<hr />
+@if (Department is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Department" OnValidSubmit="UpdateDepartment" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert"/>
+                <input type="hidden" name="Department.Id" value="@Department.Id" />
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name:</label>
+                    <InputText id="name" @bind-Value="Department.Name" class="form-control" />
+                    <ValidationMessage For="() => Department.Name" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
     </div>
+}
 
-    @if (Department is null)
-    {
-        <div class="card shadow-sm">
-<div class="card-body">
-       <div class="d-flex justify-content-center p-4">
- <div class="spinner-border text-primary" role="status">
-    <span class="visually-hidden">Loading...</span>
-  </div>
-     </div>
-            </div>
-    </div>
-    }
-    else
-    {
-        <div class="row">
-      <div class="col-md-6">
-      <div class="card shadow-sm">
-<div class="card-body">
-       <EditForm method="post" Model="Department" OnValidSubmit="UpdateDepartment" FormName="edit" Enhance>
-        <DataAnnotationsValidator />
-      <ValidationSummary class="text-danger rounded p-3 mb-3 bg-light" role="alert"/>
-             <input type="hidden" name="Department.Id" value="@Department.Id" />
-
-           <div class="form-floating mb-4">
-         <InputText id="name" @bind-Value="Department.Name" class="form-control" placeholder="Enter department name"/>
-      <label for="name">Department Name</label>
-       <ValidationMessage For="() => Department.Name" class="text-danger small" />
-        </div>
-
-   <div class="d-flex gap-2">
-      <button type="submit" class="btn btn-primary">
-       <i class="bi bi-check-circle"></i> Save Changes
-     </button>
-    <a href="/departments" class="btn btn-outline-secondary">Cancel</a>
-        </div>
-       </EditForm>
-         </div>
-    </div>
-        </div>
-        </div>
-    }
+<div>
+    <a href="/departments">Back to List</a>
 </div>
 
 @code {
@@ -69,34 +47,36 @@
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-   Department ??= await context.Departments.FirstOrDefaultAsync(m => m.Id == Id);
+        Department ??= await context.Departments.FirstOrDefaultAsync(m => m.Id == Id);
 
         if (Department is null)
         {
             NavigationManager.NavigateTo("notfound");
-   }
-}
+        }
+    }
 
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
     private async Task UpdateDepartment()
     {
         using var context = DbFactory.CreateDbContext();
-context.Attach(Department!).State = EntityState.Modified;
+        context.Attach(Department!).State = EntityState.Modified;
 
         try
-     {
-         await context.SaveChangesAsync();
-    }
-    catch (DbUpdateConcurrencyException)
         {
-  if (!DepartmentExists(Department!.Id))
-      {
-   NavigationManager.NavigateTo("notfound");
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!DepartmentExists(Department!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
             }
             else
-         {
-         throw;
-       }
-      }
+            {
+                throw;
+            }
+        }
 
         NavigationManager.NavigateTo("/departments");
     }
@@ -104,6 +84,6 @@ context.Attach(Department!).State = EntityState.Modified;
     private bool DepartmentExists(int id)
     {
         using var context = DbFactory.CreateDbContext();
- return context.Departments.Any(e => e.Id == id);
+        return context.Departments.Any(e => e.Id == id);
     }
 }
