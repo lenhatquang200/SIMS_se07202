@@ -54,10 +54,10 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         IsAdmin = authState.User.IsInRole("Admin");
         
-        var courses = await context.Courses
+        var courses = await context.Course
             .Include(c => c.Subject)
             .Include(c => c.Semester)
-            .Include(c => c.Lecture)
+            .Include(c => c.Lecturer)
             .ToListAsync();
 
         var enrollmentCounts = await context.Enrollments
@@ -71,7 +71,7 @@
             Name = c.Name,
             Subject = c.Subject,
             Semester = c.Semester,
-            Lecture = c.Lecture,
+            Lecture = c.Lecturer,
             StudentCount = enrollmentCounts.ContainsKey(c.Id) ? enrollmentCounts[c.Id] : 0
         }).ToList();
 

@@ -34,7 +34,7 @@ namespace SIMS.Endpoints
                     query = query.Where(u =>
                         u.Name.Contains(q) ||
                         u.Email.Contains(q) ||
-                        (u.StudentId != null && u.StudentId.Contains(q)));
+                        (u.Code != null && u.Code.Contains(q)));
                 }
 
                 var students = await query
@@ -45,7 +45,7 @@ namespace SIMS.Endpoints
                         id = u.Id,
                         name = u.Name,
                         email = u.Email ?? "",
-                        studentId = u.StudentId ?? ""
+                        Code = u.Code ?? ""
                     })
                     .ToListAsync();
 

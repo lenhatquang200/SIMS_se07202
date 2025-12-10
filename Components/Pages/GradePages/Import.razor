@@ -2,6 +2,8 @@
 @using Microsoft.EntityFrameworkCore
 @using SIMS.Data
 @using OfficeOpenXml
+@using Microsoft.AspNetCore.Components.Web
+@rendermode InteractiveServer
 @inject ApplicationDbContext Context
 @inject NavigationManager NavigationManager
 @inject IWebHostEnvironment Environment
@@ -30,15 +32,23 @@
                 <div class="mb-3">
                     <label for="fileInput" class="form-label">Select Excel File:</label>
                     <InputFile id="fileInput" OnChange="HandleFileSelected" class="form-control" accept=".xlsx,.xls" />
+                    @if (selectedFile != null)
+                    {
+                        <small class="text-success">File selected: @selectedFile.Name (@selectedFile.Size bytes)</small>
+                    }
                 </div>
 
                 <div class="mb-3">
-                    <button class="btn btn-primary" @onclick="ImportGrades" disabled="@(selectedFile == null || isProcessing)">
+                    <button type="button" class="btn btn-primary" @onclick="ImportGrades">
                         @if (isProcessing)
                         {
                             <span class="spinner-border spinner-border-sm me-2"></span>
+                            <span>Importing...</span>
                         }
-                        Import Grades
+                        else
+                        {
+                            <span>Import Grades</span>
+                        }
                     </button>
                     <a href="/grades" class="btn btn-secondary">Cancel</a>
                 </div>
@@ -112,27 +122,44 @@
         errorMessage = null;
         successMessage = null;
         importResults.Clear();
+        successMessage = $"File selected: {selectedFile?.Name}";
     }
+
 
     private async Task ImportGrades()
     {
-        if (selectedFile == null) return;
-
-        isProcessing = true;
-        errorMessage = null;
-        successMessage = null;
-        importResults.Clear();
-
         try
         {
-            using var stream = selectedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
-            using var package = new ExcelPackage(stream);
+            if (selectedFile == null)
+            {
+                errorMessage = "Please select an Excel file first.";
+                StateHasChanged();
+                return;
+            }
+
+            if (isProcessing) return;
+
+            isProcessing = true;
+            errorMessage = null;
+            successMessage = null;
+            importResults.Clear();
+            StateHasChanged();
+
+            await Task.Delay(100);
+
+            using var memoryStream = new MemoryStream();
+            await selectedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024).CopyToAsync(memoryStream);
+            memoryStream.Position = 0;
+            
+            using var package = new ExcelPackage(memoryStream);
             var worksheet = package.Workbook.Worksheets[0];
 
             var rowCount = worksheet.Dimension?.Rows ?? 0;
             if (rowCount < 2)
             {
                 errorMessage = "The Excel file is empty or has no data rows.";
+                isProcessing = false;
+                StateHasChanged();
                 return;
             }
 
@@ -259,14 +286,13 @@
             }
 
             successMessage = $"Import completed: {successCount} successful, {errorCount} failed";
+            StateHasChanged();
         }
         catch (Exception ex)
         {
-            errorMessage = $"Error processing file: {ex.Message}";
-        }
-        finally
-        {
+            errorMessage = $"Unexpected error: {ex.Message}";
             isProcessing = false;
+            StateHasChanged();
         }
     }
 

@@ -133,10 +133,10 @@
             if (currentUser != null)
             {
                 using var context = DbFactory.CreateDbContext();
-                Courses = await context.Courses
+                Courses = await context.Course
                     .Include(c => c.Subject)
                     .Include(c => c.Semester)
-                    .Where(c => c.LectureId == currentUser.Id)
+                    .Where(c => c.LecturerId == currentUser.Id)
                     .OrderBy(c => c.Semester.Name)
                     .ThenBy(c => c.Name)
                     .AsNoTracking()

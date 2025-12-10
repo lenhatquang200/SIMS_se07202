@@ -60,7 +60,7 @@
                                 </p>
                                 <p class="mb-0">
                                     <strong><i class="bi bi-person-badge text-info"></i> Lecturer:</strong><br/>
-                                    <span class="ms-3">@enrollment.Course.Lecture.Name</span>
+                                    <span class="ms-3">@enrollment.Course.Lecturer.Name</span>
                                 </p>
                             </div>
                         </div>
@@ -123,7 +123,7 @@
                     .Include(e => e.Course)
                         .ThenInclude(c => c.Semester)
                     .Include(e => e.Course)
-                        .ThenInclude(c => c.Lecture)
+                        .ThenInclude(c => c.Lecturer)
                     .Where(e => e.StudentId == currentUser.Id)
                     .OrderBy(e => e.Course.Semester.Name)
                     .ThenBy(e => e.Course.Name)
